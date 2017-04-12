@@ -47,16 +47,24 @@ values ('Roto Grip',1998);
 insert into BowlingCompanies
 values ('Motiv',1994);
 
+insert into BowlingCompanies
+values('Dexter',1990);
+
 -- create and insert some data into bowling balls table--
 drop table if exists BowlingBalls;
 create table BowlingBalls(name varchar(50) primary key, company_name varchar(50),coverstock varchar(50),
 color varchar(50) );
+
+select * from BowlingBalls;
 
 insert into BowlingBalls(name,company_name,coverstock,color)
 values('Timeless','Storm','R2S Hybrid Reactive','Silver');
 
 insert into BowlingBalls(name,company_name,coverstock,color)
 values('Sure Lock','Storm','GI-17','Orange');
+
+insert into BowlingBalls(name,company_name,coverstock,color)
+values('Snap Lock','Storm','GI-17','Blue');
 
 insert into BowlingBalls(name,company_name,coverstock,color)
 values('Jackal Ghost','Motiv','Coercion HFS','Orange');
@@ -105,6 +113,41 @@ values(6,'Jackal Ghost');
 
 
 -- queries--
+
+
+-- 6 this query returns the balls used by professional bowlers that are made by their main sponsor
+select bb.name,bb.company_name, pb.Lname,pb.main_sponsor from ProfessionalBowlers pb 
+left join BowlingCompanies bc on pb.main_sponsor = bc.name
+left join BowlingBalls bb on bc.name = bb.company_name
+left join BallLookup bl on bl.ball_name = bb.name;
+
+-- 7 this query returns all balls in the bowlingballs table that are not used by a pro--
+select bb.name from BowlingBalls bb
+where bb.name not in(select ball_name from BallLookup);
+
+-- 8 FINISH THIS ONE--
+select pb.Fname,pb.Lname,pb.main_sponsor,pb.season_avg from ProfessionalBowlers pb
+join BowlingCompanies bc on bc.name = pb.main_sponsor
+group by pb.main_sponsor
+having pb.season_avg > 215; 
+
+-- 9 this query resturns all balls in bowlingballs table not used by a pro using a not exists clause--
+select bb.name from BowlingBalls bb
+where not exists(select bl.ball_name from BallLookup bl where bb.name = bl.ball_name);
+
+
+-- 10 FINISH THIS ONE --
+
+-- 11 this returns a list of all bowling companies that are sponsoring pro players, no duplicates--
+select distinct pb.main_sponsor from ProfessionalBowlers pb; 
+
+-- 12 FINISH THIS ONE--
+
+
+-- 13 --
+
+
+
 
 
 
