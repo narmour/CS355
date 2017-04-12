@@ -4,7 +4,8 @@ use armourn;
 -- create and insert some data into pro bowlers table --
 drop table if exists ProfessionalBowlers;
 create table ProfessionalBowlers(age INT,fname varchar(50),lname varchar(50),main_sponsor varchar(50),
-season_avg float,bowler_id int auto_increment primary key,l_or_r_handed varchar(5),season_earnings float,num_titles int);
+season_avg float,bowler_id int auto_increment primary key,l_or_r_handed varchar(5),season_earnings float,num_titles int,
+foreign key (main_sponsor) references BowlingCompanies(name));
 
 insert into ProfessionalBowlers(age,fname,lname,main_sponsor,season_avg,l_or_r_handed,season_earnings,num_titles)
 values(47,'chris','barnes','columbia 300',216.39,'right',38007.00,18);
@@ -76,7 +77,10 @@ values('Hectic','Roto Grip','50ML Pearl','Pink');
 -- create and insert some data into ProBowler Ball Lookup table --
 drop table BallLookup;
 create table BallLookup(bowler_id int, ball_name varchar(50),
-primary key(bowler_id,ball_name));
+primary key(bowler_id,ball_name),
+foreign key(bowler_id) references ProfessionalBowlers(bowler_id),
+foreign key (ball_name) references BowlingBalls(name)
+);
 select * from ProfessionalBowlers;
 
 insert into BallLookup
@@ -96,6 +100,13 @@ values(5,'Hectic');
 
 insert into BallLookup
 values(6,'Jackal Ghost');
+
+
+
+
+-- queries--
+
+
 
 
 
