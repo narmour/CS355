@@ -50,6 +50,9 @@ values ('Motiv',1994);
 insert into BowlingCompanies
 values('Dexter',1990);
 
+insert into BowlingCompanies
+values('Brunswick',1950);
+
 -- create and insert some data into bowling balls table--
 drop table if exists BowlingBalls;
 create table BowlingBalls(name varchar(50) primary key, company_name varchar(50),coverstock varchar(50),
@@ -90,12 +93,16 @@ foreign key(bowler_id) references ProfessionalBowlers(bowler_id),
 foreign key (ball_name) references BowlingBalls(name)
 );
 select * from ProfessionalBowlers;
+select * from BallLookup;
 
 insert into BallLookup
 values(1,'SwerveFx');
 
 insert into BallLookup
 values(2,'Sure Lock');
+
+insert into BallLookup
+values(2,'Snap Lock');
 
 insert into BallLookup
 values(3,'Sure Lock');
@@ -125,18 +132,23 @@ left join BallLookup bl on bl.ball_name = bb.name;
 select bb.name from BowlingBalls bb
 where bb.name not in(select ball_name from BallLookup);
 
--- 8 FINISH THIS ONE--
-select pb.Fname,pb.Lname,pb.main_sponsor,pb.season_avg from ProfessionalBowlers pb
-join BowlingCompanies bc on bc.name = pb.main_sponsor
-group by pb.main_sponsor
-having pb.season_avg > 215; 
+-- 8 This query returns the bowlers that have more than 1 ball in the BallLookup table--
+select pb.Fname,pb.Lname,pb.main_sponsor,pb.bowler_id,count(bl.bowler_id) as num_balls from ProfessionalBowlers pb
+join BallLookup bl on bl.bowler_id = pb.bowler_id
+group by bl.bowler_id
+having num_balls >1; 
 
 -- 9 this query resturns all balls in bowlingballs table not used by a pro using a not exists clause--
 select bb.name from BowlingBalls bb
 where not exists(select bl.ball_name from BallLookup bl where bb.name = bl.ball_name);
 
 
--- 10 FINISH THIS ONE --
+-- 10 this query grabs all of the bowling companies that sponsor pro players and other bowling companies that do not sponsor players --
+select distinct bc.name from BowlingCompanies bc
+union
+select distinct pb.main_sponsor from ProfessionalBowlers pb;
+
+
 
 -- 11 this returns a list of all bowling companies that are sponsoring pro players, no duplicates--
 select distinct pb.main_sponsor from ProfessionalBowlers pb; 
@@ -144,8 +156,37 @@ select distinct pb.main_sponsor from ProfessionalBowlers pb;
 -- 12 FINISH THIS ONE--
 
 
--- 13 --
 
+-- 13 --
+create view above_average_earnings as
+select pb.Fname,pb.Lname,pb.season_earnings from ProfessionalBowlers pb having
+pb.season_earnings >(select avg(season_earnings) from ProfessionalBowlers);
+
+select * from above_average_earnings;
+
+
+-- 14--
+delimiter //
+create function fn_get_main_sponsor(b_id int) returns varchar(50)
+begin
+declare ret_sponsor varchar(50);
+select pb.main_sponsor from ProfessionalBowlers pb
+where pb.bowler_id = b_id into ret_sponsor;
+return ret_sponsor;
+end //
+delimiter ;
+
+
+
+-- 15--
+delimiter //
+create procedure specific_color_balls(c varchar(50))
+begin
+select * from BowlingBalls where color = c;
+end //
+delimiter ;
+
+call specific_color_balls('pink')
 
 
 
